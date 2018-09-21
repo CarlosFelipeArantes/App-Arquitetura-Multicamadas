@@ -1,0 +1,189 @@
+<html>
+<head>
+    <meta charset="UTF-8"> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+</head>
+
+<script>
+
+    function submeter() {
+        let nome = document.getElementsByName("nome")[0].value;
+        let idade = document.getElementsByName("idade")[0].value;
+        let cpf = document.getElementsByName("cpf")[0].value;
+        let end = document.getElementsByName("endereco")[0].value;
+        let tel = document.getElementsByName("tel")[0].value;
+        let cargo = document.getElementsByName("cargo")[0].value;
+
+        let conteudo = nome + "-" + idade + "-" + cpf + "-" + end + "-" + tel + "-" + cargo;
+
+        console.log(conteudo);
+
+        fetch('http://localhost:3000/receber', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/x-www-form-urlencoded'},
+            body: conteudo
+        }).then(res => { alert("Cadastro realizado com sucesso!") });
+
+    }
+
+    function getRelatorio() {
+        $.post( "http://localhost:3000/redirect", function( data ) {
+            exibirRelatorio(data);
+        });
+    }
+
+    function exibirRelatorio(pessoas) {
+        let lsPessoas = pessoas.split("|");
+        lsPessoas.splice(-1, 1);
+
+        let tblBody;
+
+        lsPessoas.forEach(function(pessoa) {
+            let dados = pessoa.split("-");
+            let nome = dados[0];
+            let idade = dados[1];
+            let cpf = dados[2];
+            let end = dados[3];
+            let tel = dados[4];
+            let cargo = dados[5];
+
+            tblBody += "<tr>"
+            tblBody += "<td>" + nome + "</th>";
+            tblBody += "<td>" + idade + "</th>";
+            tblBody += "<td>" + cpf + "</th>";
+            tblBody += "<td>" + end + "</th>";
+            tblBody += "<td>" + tel + "</th>";
+            tblBody += "<td>" + cargo + "</th>";
+            tblBody += "</tr>";  
+        });
+
+        $("tbody").html(tblBody);
+        $("#exampleModal").modal('show');
+    }
+
+</script>
+
+<body>
+
+    <section class="jumbotron text-center">
+        <div class="container">
+          <h1 class="jumbotron-heading">Sistema de Cadastro de Pessoas</h1>
+          <p class="lead text-muted">Esse sistema proposita incentivar a prática dos conhecimentos adquiridos na disciplina. É utilizida uma arquitetura de 3 camadas com NodeJs na camada de aplicação, Java na camada de persistência e o Browser na camada de apresentação.</p>
+        </div>
+    </section>
+
+
+    <div class="container pt-5 mb-5">
+        <div class="row justify-content-center mb-5">
+            <p><h3> Formulário de Cadastro </h3></p>
+        </div>
+
+        <div class='row justify-content-center'>
+
+            <form class="form-group" id="formulario">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="nome">Nome</label>
+                            <input type="text" class="form-control" name="nome">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="doc">CPF</label>
+                            <input type="number" class="form-control" name="cpf">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="telefone">Telefone</label>
+                            <input type="number" class="form-control" name="tel">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="idade">Idade</label>
+                            <input type="number" class="form-control" name="idade">
+                        </div>
+                    </div>
+                </div>                
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="endereco">Endereço</label>
+                            <input type="text" class="form-control" name="endereco">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="cargo">Cargo</label>
+                            <input type="text" class="form-control" name="cargo">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 text-right">
+                <button class="btn btn-primary" onclick="getRelatorio();">Relatório</button>
+            </div>
+
+            <div class="col-md-6 text-left">
+                <button class="btn btn-primary" onclick="submeter();">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Relatório de Pessoas</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Nome</th>
+                  <th scope="col">CPF</th>
+                  <th scope="col">Telefone</th>
+                  <th scope="col">Idade</th>
+                  <th scope="col">Endereco</th>
+                  <th scope="col">Cargo</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                
+              </tbody>
+
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</body>
+</html>
